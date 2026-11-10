@@ -204,7 +204,7 @@ public final class GasparApplication extends Application {
         compareButton.getStyleClass().add("primary-button");
         compareButton.setDisable(true);
         compareButton.setOnAction(event -> compare());
-        saveButton.getStyleClass().add("secondary-button");
+        saveButton.getStyleClass().addAll("secondary-button", "export-button");
         saveButton.setDisable(true);
         progress.setMaxWidth(Double.MAX_VALUE);
         progress.getStyleClass().add("comparison-progress");
@@ -234,6 +234,8 @@ public final class GasparApplication extends Application {
         search.setPromptText("⌕  Buscar número da nota");
         search.textProperty().addListener((obs, before, after) -> applyFilter());
         search.getStyleClass().add("search-field");
+        search.setMaxWidth(360);
+        filter.setPrefWidth(190);
     }
 
     private void buildResultArea() {
@@ -248,10 +250,10 @@ public final class GasparApplication extends Application {
         summary.setTileAlignment(Pos.TOP_LEFT);
 
         Label tableTitle = sectionTitle("Notas conferidas");
-        count.getStyleClass().add("count");
+        count.getStyleClass().addAll("count", "count-badge");
         Region tableSpacer = new Region();
         HBox.setHgrow(tableSpacer, Priority.ALWAYS);
-        HBox tableHead = new HBox(10, tableTitle, count, tableSpacer, search, filter, saveButton);
+        HBox tableHead = new HBox(12, tableTitle, count, tableSpacer, search, filter, saveButton);
         tableHead.setAlignment(Pos.CENTER_LEFT);
         tableHead.getStyleClass().add("table-head");
 
@@ -407,21 +409,23 @@ public final class GasparApplication extends Application {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         table.setPlaceholder(new Label("Nenhuma nota encontrada para este filtro."));
         table.getStyleClass().add("notes-table");
-        addColumn("Nota", n -> "%09d".formatted(n.chave().nota()), 105, "note-column");
-        addColumn("Série", n -> n.chave().serie(), 65, null);
-        addColumn("Data Domínio", NotaComparada::dataDominio, 110, this::formatDate, null);
-        addColumn("Espécie", NotaComparada::especieDominio, 80, this::dash, null);
-        addColumn("Valor Domínio", NotaComparada::valorDominio, 125, this::formatMoney, "numeric-column");
-        addColumn("Data SPED", NotaComparada::dataSped, 105, this::formatDate, null);
-        addColumn("Modelo", NotaComparada::modeloSped, 75, this::dash, null);
-        addColumn("Valor SPED", NotaComparada::valorSped, 120, this::formatMoney, "numeric-column");
+        addColumn("Nota", n -> "%09d".formatted(n.chave().nota()), 120, "note-column");
+        addColumn("Série", n -> n.chave().serie(), 70, "center-column");
+        addColumn("Data Domínio", NotaComparada::dataDominio, 125, this::formatDate, "center-column");
+        addColumn("Espécie", NotaComparada::especieDominio, 85, this::dash, "center-column");
+        addColumn("Valor Domínio", NotaComparada::valorDominio, 140, this::formatMoney, "numeric-column");
+        addColumn("Data SPED", NotaComparada::dataSped, 125, this::formatDate, "center-column");
+        addColumn("Modelo", NotaComparada::modeloSped, 85, this::dash, "center-column");
+        addColumn("Valor SPED", NotaComparada::valorSped, 140, this::formatMoney, "numeric-column");
         addSituationColumn();
     }
 
     private void addSituationColumn() {
         TableColumn<NotaComparada, SituacaoComparacao> column = new TableColumn<>("Situação");
+        column.getStyleClass().add("situation-column");
         column.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().situacao()));
-        column.setPrefWidth(155);
+        column.setMinWidth(180);
+        column.setPrefWidth(195);
         column.setCellFactory(ignored -> new TableCell<>() {
             @Override protected void updateItem(SituacaoComparacao situation, boolean empty) {
                 super.updateItem(situation, empty);
