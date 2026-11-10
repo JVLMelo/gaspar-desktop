@@ -13,6 +13,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -37,6 +39,11 @@ import java.util.List;
 import java.util.Locale;
 
 public final class GasparApplication extends Application {
+    private static final String MOON_ICON = "M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z";
+    private static final String SUN_ICON = "M12 4V2 M12 22V20 M4.93 4.93L3.51 3.51 "
+            + "M20.49 20.49L19.07 19.07 M4 12H2 M22 12H20 "
+            + "M4.93 19.07L3.51 20.49 M20.49 3.51L19.07 4.93 "
+            + "M16 12A4 4 0 1 1 8 12A4 4 0 0 1 16 12Z";
     private static final Logger LOG = LoggerFactory.getLogger(GasparApplication.class);
     private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
@@ -78,20 +85,24 @@ public final class GasparApplication extends Application {
         appRoot.getStyleClass().add("app-root");
         appRoot.setTop(buildTopBar());
 
-        TilePane files = new TilePane(14, 14, dominioSelector, spedSelector);
+        TilePane files = new TilePane(18, 18, dominioSelector, spedSelector);
         files.setPrefColumns(2);
-        files.setPrefTileWidth(560);
+        files.setPrefTileWidth(650);
         files.setTileAlignment(Pos.TOP_LEFT);
         files.setAlignment(Pos.TOP_LEFT);
+        files.widthProperty().addListener((observable, previous, current) -> {
+            double available = (current.doubleValue() - files.getHgap()) / 2;
+            files.setPrefTileWidth(Math.max(400, available));
+        });
 
         configureActions();
         configureTable();
         configureFilters();
         buildResultArea();
 
-        VBox content = new VBox(16, buildPageToolbar(), files, buildActionCard(), resultArea);
+        VBox content = new VBox(20, buildPageToolbar(), files, buildActionCard(), resultArea);
         content.getStyleClass().add("content");
-        content.setMaxWidth(1390);
+        content.setMaxWidth(1480);
         VBox.setVgrow(resultArea, Priority.ALWAYS);
         StackPane contentWrapper = new StackPane(content);
         contentWrapper.setAlignment(Pos.TOP_CENTER);
@@ -102,12 +113,12 @@ public final class GasparApplication extends Application {
         scroll.getStyleClass().add("root-scroll");
         appRoot.setCenter(scroll);
 
-        Scene scene = new Scene(appRoot, 1280, 820);
+        Scene scene = new Scene(appRoot, 1360, 860);
         scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
         stage.setTitle("Gaspar — Conferência Domínio × SPED");
         stage.getIcons().add(appIcon);
-        stage.setMinWidth(900);
-        stage.setMinHeight(650);
+        stage.setMinWidth(960);
+        stage.setMinHeight(680);
         stage.setScene(scene);
         stage.show();
         dominioSelector.onChange(this::updateCompareState);
@@ -116,8 +127,11 @@ public final class GasparApplication extends Application {
 
     private HBox buildTopBar() {
         ImageView mark = new ImageView(appIcon);
-        mark.setFitWidth(38);
-        mark.setFitHeight(38);
+        // O PNG possui uma margem transparente generosa; o viewport mantém o
+        // símbolo visualmente alinhado ao centro do texto no cabeçalho.
+        mark.setViewport(new Rectangle2D(150, 150, 954, 954));
+        mark.setFitWidth(44);
+        mark.setFitHeight(44);
         mark.setPreserveRatio(true);
         mark.setSmooth(true);
         mark.getStyleClass().add("brand-icon");
@@ -125,7 +139,9 @@ public final class GasparApplication extends Application {
         brandName.getStyleClass().add("brand-name");
         Label brandCaption = new Label("Conferência fiscal");
         brandCaption.getStyleClass().add("brand-caption");
-        HBox brand = new HBox(11, mark, new VBox(0, brandName, brandCaption));
+        VBox brandCopy = new VBox(1, brandName, brandCaption);
+        brandCopy.setAlignment(Pos.CENTER_LEFT);
+        HBox brand = new HBox(12, mark, brandCopy);
         brand.setAlignment(Pos.CENTER_LEFT);
         brand.getStyleClass().add("brand");
 
@@ -134,23 +150,30 @@ public final class GasparApplication extends Application {
         Label headerCaption = new Label("Compare relatórios fiscais localmente, com segurança e precisão");
         headerCaption.getStyleClass().add("header-caption");
         VBox headerCopy = new VBox(3, headerTitle, headerCaption);
+        headerCopy.setAlignment(Pos.CENTER_LEFT);
         headerCopy.getStyleClass().add("header-copy");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         Label privacy = new Label("▣  Processamento 100% local");
         privacy.getStyleClass().add("privacy");
-        Button theme = new Button("☾  Tema escuro");
+        SVGPath themeIcon = new SVGPath();
+        themeIcon.setContent(MOON_ICON);
+        themeIcon.getStyleClass().add("theme-icon");
+        Button theme = new Button("Tema escuro", themeIcon);
+        theme.setGraphicTextGap(9);
         theme.getStyleClass().add("theme-button");
         theme.setOnAction(event -> {
             boolean dark = !appRoot.getStyleClass().contains("dark");
             appRoot.getStyleClass().remove("dark");
             if (dark) appRoot.getStyleClass().add("dark");
-            theme.setText(dark ? "☀  Tema claro" : "☾  Tema escuro");
+            themeIcon.setContent(dark ? SUN_ICON : MOON_ICON);
+            theme.setText(dark ? "Tema claro" : "Tema escuro");
         });
 
-        HBox topBar = new HBox(20, brand, headerCopy, spacer, privacy, theme);
+        HBox topBar = new HBox(22, brand, headerCopy, spacer, privacy, theme);
         topBar.setAlignment(Pos.CENTER_LEFT);
+        topBar.setFillHeight(true);
         topBar.getStyleClass().add("topbar");
         return topBar;
     }
@@ -169,7 +192,9 @@ public final class GasparApplication extends Application {
         modeBox.setAlignment(Pos.CENTER_RIGHT);
         modeBox.setVisible(false);
         modeBox.setManaged(false);
-        HBox toolbar = new HBox(new VBox(3, title, subtitle), spacer, modeBox);
+        VBox pageCopy = new VBox(4, title, subtitle);
+        pageCopy.setAlignment(Pos.CENTER_LEFT);
+        HBox toolbar = new HBox(pageCopy, spacer, modeBox);
         toolbar.setAlignment(Pos.CENTER_LEFT);
         toolbar.getStyleClass().add("page-toolbar");
         return toolbar;
@@ -529,9 +554,10 @@ public final class GasparApplication extends Application {
         private Runnable changeListener = () -> {};
 
         private FileSelectorPane(String title, String dropTitle) {
-            setSpacing(12);
-            setPadding(new Insets(16, 18, 12, 18));
-            setPrefWidth(560);
+            setSpacing(14);
+            setPadding(new Insets(20, 20, 16, 20));
+            setPrefWidth(650);
+            setMaxWidth(Double.MAX_VALUE);
             getStyleClass().addAll("surface-card", "upload-card");
             Label titleLabel = new Label(title);
             titleLabel.getStyleClass().add("upload-title");

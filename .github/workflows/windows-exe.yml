@@ -1,0 +1,50 @@
+name: Gerar EXE do Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows-exe:
+    name: Compilar e empacotar no Windows
+    runs-on: windows-2025
+    timeout-minutes: 30
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v7
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Executar testes e gerar o instalador
+        shell: pwsh
+        run: ./packaging/windows/build-installer.ps1 -PackageType exe
+
+      - name: Gerar checksum SHA-256
+        shell: pwsh
+        run: |
+          Get-ChildItem target/installer/*.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash *$($_.Name)"
+          } | Set-Content target/installer/SHA256SUMS.txt
+
+      - name: Disponibilizar o instalador para download
+        uses: actions/upload-artifact@v7
+        with:
+          name: Gaspar-Windows-${{ github.run_id }}
+          path: |
+            target/installer/*.exe
+            target/installer/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+

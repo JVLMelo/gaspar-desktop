@@ -120,7 +120,94 @@ Windows — instalador `.msi`:
 powershell -ExecutionPolicy Bypass -File packaging\windows\build-installer.ps1
 ```
 
-Os scripts executam os testes, reúnem o JAR e suas dependências e chamam `jpackage`. O resultado fica em `target/installer`. O runtime Java é incluído, portanto o usuário final não precisa ter Java instalado.
+### Gerar o instalador Windows usando Linux
+
+O `jpackage` não gera um instalador Windows diretamente no Linux. Para contornar essa limitação de forma suportada, o projeto possui um workflow do GitHub Actions: o comando é iniciado no Linux, mas a compilação e o empacotamento acontecem em uma máquina Windows temporária do GitHub.
+
+O resultado é um `.exe` autocontido, com o runtime Java incluído. Não é necessário possuir um computador Windows.
+
+#### 1. Preparar o GitHub CLI
+
+Instale o [GitHub CLI](https://cli.github.com/) no Linux. Em distribuições baseadas em Debian ou Ubuntu, ele normalmente pode ser instalado com:
+
+```bash
+sudo apt update
+sudo apt install gh
+```
+
+Em seguida, autentique sua conta:
+
+```bash
+gh auth login
+```
+
+Escolha `GitHub.com`, o protocolo `HTTPS` e a autenticação pelo navegador quando essas opções forem apresentadas.
+
+#### 2. Enviar o projeto ao GitHub
+
+O serviço remoto só consegue compilar arquivos que já estejam no GitHub. Antes de gerar o instalador, confirme que as alterações foram salvas em um commit e enviadas:
+
+```bash
+git status
+git push origin main
+```
+
+Na primeira utilização, o arquivo `.github/workflows/windows-exe.yml` também precisa estar presente na branch principal do repositório.
+
+#### 3. Gerar e baixar o `.exe`
+
+Execute na raiz do projeto:
+
+```bash
+chmod +x packaging/windows/build-on-github.sh
+./packaging/windows/build-on-github.sh
+```
+
+O comando:
+
+1. solicita uma máquina Windows no GitHub Actions;
+2. configura o Java 21;
+3. executa os testes automatizados;
+4. gera o instalador com `jpackage` e WiX;
+5. calcula o checksum SHA-256;
+6. acompanha a execução até o final;
+7. baixa o resultado automaticamente.
+
+Ao terminar, os arquivos estarão em:
+
+```text
+target/windows-exe/
+├── Gaspar-*.exe
+└── SHA256SUMS.txt
+```
+
+É possível escolher outro diretório de saída passando-o como argumento:
+
+```bash
+./packaging/windows/build-on-github.sh "$HOME/Downloads/gaspar-windows"
+```
+
+O script interrompe a operação caso existam alterações locais sem commit, evitando gerar um instalador desatualizado.
+
+#### Gerar pela interface do GitHub
+
+O mesmo processo pode ser iniciado sem o GitHub CLI:
+
+1. abra o repositório no GitHub;
+2. entre na aba **Actions**;
+3. escolha **Gerar EXE do Windows**;
+4. clique em **Run workflow** e confirme a branch;
+5. aguarde a conclusão da execução;
+6. abra a execução concluída e baixe o artefato `Gaspar-Windows-*`.
+
+O artefato permanece disponível no GitHub por 30 dias. Criar e enviar uma tag cujo nome comece com `v`, como `v1.0.0`, também inicia a geração automaticamente:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Quando o empacotamento é executado diretamente no Windows, o resultado fica em `target/installer`. Quando é solicitado pelo script Linux, o download fica em `target/windows-exe`.
 
 Detalhes e formatos alternativos estão em [packaging/README.md](packaging/README.md).
 

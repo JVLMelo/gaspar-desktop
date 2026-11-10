@@ -33,3 +33,13 @@ powershell -ExecutionPolicy Bypass -File packaging\windows\build-installer.ps1 -
 ```
 
 O tipo padrão é `.msi` e requer WiX Toolset.
+
+### Acionar a geração do `.exe` pelo Linux
+
+O workflow `.github/workflows/windows-exe.yml` executa o script acima em um runner Windows do GitHub Actions. No Linux, com o [GitHub CLI](https://cli.github.com/) autenticado, faça commit e push das alterações e execute:
+
+```bash
+./packaging/windows/build-on-github.sh
+```
+
+O instalador e o arquivo `SHA256SUMS.txt` serão baixados para `target/windows-exe`. A geração também pode ser iniciada manualmente pela aba **Actions** do repositório ou pela criação de uma tag cujo nome comece com `v`.
