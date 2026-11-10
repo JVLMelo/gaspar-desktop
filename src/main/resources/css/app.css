@@ -1,0 +1,221 @@
+.root {
+    -fx-font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+.app-root { -fx-background-color: #f3f5f8; }
+.root-scroll, .root-scroll > .viewport, .content-wrapper { -fx-background-color: #f3f5f8; }
+.content { -fx-padding: 22px 30px 32px 30px; }
+
+/* Barra superior */
+.topbar {
+    -fx-min-height: 74px;
+    -fx-pref-height: 74px;
+    -fx-padding: 0 30px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #d9e0e8 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+.brand { -fx-min-width: 220px; }
+.brand-icon {
+    -fx-effect: dropshadow(gaussian, rgba(14,53,88,.22), 3, 0, 0, 2);
+}
+.brand-name { -fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #172334; }
+.brand-caption { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.header-copy { -fx-padding: 0 0 0 20px; -fx-border-color: transparent transparent transparent #d9e0e8; -fx-border-width: 0 0 0 1px; }
+.header-title { -fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.header-caption { -fx-font-size: 11px; -fx-text-fill: #667487; }
+.privacy { -fx-font-size: 11px; -fx-text-fill: #24734a; }
+.theme-button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d9e0e8;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-text-fill: #667487;
+    -fx-padding: 7px 10px;
+}
+
+/* Cabeçalho da página */
+.page-toolbar { -fx-padding: 0 0 1px 0; }
+.page-title { -fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: #172334; }
+.page-subtitle, .mode-label { -fx-font-size: 12px; -fx-text-fill: #667487; }
+.movement-badge {
+    -fx-background-color: #e8f1fb;
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 9px;
+    -fx-text-fill: #174a78;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+/* Superfícies e upload */
+.surface-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d9e0e8;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(27,54,81,.045), 10, 0, 0, 2);
+}
+.upload-card { -fx-min-height: 144px; }
+.upload-title { -fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.required, .drop-caption, .file-path { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.drop-zone {
+    -fx-min-height: 82px;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #aebdce;
+    -fx-border-style: dashed;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+.drop-zone.drag-active { -fx-background-color: #e8f1fb; -fx-border-color: #2167a8; }
+.pdf-icon {
+    -fx-min-width: 32px; -fx-pref-width: 32px; -fx-min-height: 38px; -fx-pref-height: 38px;
+    -fx-alignment: center;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c8d4e1;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-text-fill: #b83c40;
+    -fx-font-size: 10px;
+    -fx-font-weight: 800;
+}
+.drop-title { -fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.outline-button, .secondary-button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #b9c7d6;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-text-fill: #174a78;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-padding: 8px 12px;
+}
+.secondary-button { -fx-background-color: #e8f1fb; -fx-border-color: #c8dced; }
+.file-row { -fx-padding: 10px 0 0 0; -fx-border-color: #edf0f4 transparent transparent transparent; -fx-border-width: 1px 0 0 0; }
+.file-name { -fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.remove-button { -fx-background-color: transparent; -fx-text-fill: #667487; -fx-font-size: 18px; -fx-padding: 2px 6px; }
+
+/* Ação */
+.action-card { -fx-padding: 13px 17px; }
+.primary-button {
+    -fx-background-color: #174a78;
+    -fx-background-radius: 7px;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-padding: 10px 17px;
+}
+.primary-button:hover { -fx-background-color: #2167a8; }
+.button:disabled { -fx-opacity: .48; }
+.action-title { -fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.status { -fx-font-size: 11px; -fx-text-fill: #667487; }
+.status.success { -fx-text-fill: #24734a; }
+.status.error { -fx-text-fill: #b83c40; -fx-font-weight: 700; }
+.comparison-progress { -fx-pref-height: 5px; -fx-padding: 7px 0 0 0; }
+.comparison-progress > .track { -fx-background-color: #e9eef3; -fx-background-radius: 6px; }
+.comparison-progress > .bar { -fx-background-color: #2167a8; -fx-background-radius: 6px; -fx-background-insets: 0; }
+.step { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.step.completed { -fx-text-fill: #24734a; -fx-font-weight: 700; }
+
+/* Resumo */
+.section-title { -fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #172334; }
+.completion-notice {
+    -fx-background-color: #e8f6ee;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 9px;
+    -fx-font-size: 11px;
+    -fx-text-fill: #24734a;
+}
+.stat-card { -fx-padding: 11px 12px; -fx-min-height: 72px; }
+.stat-label { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.stat-value { -fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #172334; -fx-padding: 4px 0 0 0; }
+.stat-caption { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.stat-blue .stat-value { -fx-text-fill: #2167a8; }
+.stat-good .stat-value { -fx-text-fill: #24734a; }
+.stat-warn .stat-value { -fx-text-fill: #986617; }
+.stat-bad .stat-value { -fx-text-fill: #b83c40; }
+
+/* Tabela */
+.table-card { -fx-padding: 0; }
+.table-head { -fx-padding: 13px 17px 12px 17px; -fx-border-color: transparent transparent #d9e0e8 transparent; -fx-border-width: 0 0 1px 0; }
+.count, .last-updated { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.search-field {
+    -fx-pref-width: 190px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d9e0e8;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 11px;
+    -fx-text-fill: #172334;
+    -fx-prompt-text-fill: #667487;
+}
+.filter-select {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d9e0e8;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 11px;
+}
+.notes-table { -fx-pref-height: 420px; -fx-background-color: #ffffff; -fx-border-width: 0; -fx-padding: 0; }
+.notes-table .column-header-background { -fx-background-color: #f8fafc; }
+.notes-table .column-header, .notes-table .filler {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: transparent transparent #d9e0e8 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-size: 34px;
+}
+.notes-table .column-header .label { -fx-alignment: center-left; -fx-text-fill: #667487; -fx-font-size: 10px; -fx-font-weight: 700; }
+.notes-table .table-row-cell { -fx-background-color: #ffffff; -fx-border-color: transparent transparent #edf0f4 transparent; -fx-border-width: 0 0 1px 0; -fx-cell-size: 38px; }
+.notes-table .table-row-cell:hover { -fx-background-color: #f8fbfe; }
+.notes-table .table-row-cell:selected { -fx-background-color: #e8f1fb; -fx-text-background-color: #172334; }
+.notes-table .table-cell { -fx-border-width: 0; -fx-alignment: center-left; -fx-font-size: 11px; -fx-text-fill: #172334; -fx-padding: 8px 12px; }
+.notes-table .numeric-column .table-cell, .numeric-column { -fx-alignment: center-right; }
+.notes-table .note-column .table-cell, .note-column { -fx-font-weight: 700; }
+.situation { -fx-font-size: 11px; -fx-font-weight: 700; }
+.situation-ok { -fx-text-fill: #24734a; }
+.situation-warning { -fx-text-fill: #986617; }
+.situation-missing { -fx-text-fill: #b83c40; }
+.table-bottom { -fx-padding: 10px 17px; -fx-border-color: #d9e0e8 transparent transparent transparent; -fx-border-width: 1px 0 0 0; }
+.legend { -fx-font-size: 10px; -fx-text-fill: #667487; }
+.legend-ok { -fx-text-fill: #24734a; }
+.legend-warning { -fx-text-fill: #986617; }
+.legend-missing { -fx-text-fill: #b83c40; }
+
+/* Foco */
+.button:focused, .text-field:focused, .combo-box:focused { -fx-effect: dropshadow(gaussian, #91c1ed, 5, .45, 0, 0); }
+
+/* Tema escuro */
+.app-root.dark { -fx-background-color: #141a22; }
+.app-root.dark .root-scroll, .app-root.dark .root-scroll > .viewport, .app-root.dark .content-wrapper { -fx-background-color: #141a22; }
+.app-root.dark .topbar, .app-root.dark .surface-card, .app-root.dark .notes-table,
+.app-root.dark .notes-table .table-row-cell { -fx-background-color: #1c2530; }
+.app-root.dark .topbar, .app-root.dark .surface-card, .app-root.dark .table-head,
+.app-root.dark .table-bottom { -fx-border-color: #334352; }
+.app-root.dark .brand-name, .app-root.dark .header-title, .app-root.dark .page-title,
+.app-root.dark .upload-title, .app-root.dark .drop-title, .app-root.dark .file-name,
+.app-root.dark .action-title, .app-root.dark .section-title, .app-root.dark .stat-value,
+.app-root.dark .notes-table .table-cell { -fx-text-fill: #edf3f8; }
+.app-root.dark .brand-caption, .app-root.dark .header-caption, .app-root.dark .page-subtitle,
+.app-root.dark .mode-label, .app-root.dark .required, .app-root.dark .drop-caption,
+.app-root.dark .file-path, .app-root.dark .status, .app-root.dark .step,
+.app-root.dark .stat-label, .app-root.dark .stat-caption, .app-root.dark .count,
+.app-root.dark .last-updated { -fx-text-fill: #9baabd; }
+.app-root.dark .drop-zone, .app-root.dark .theme-button, .app-root.dark .outline-button,
+.app-root.dark .search-field, .app-root.dark .filter-select { -fx-background-color: #202c38; -fx-text-fill: #edf3f8; }
+.app-root.dark .drop-zone, .app-root.dark .theme-button, .app-root.dark .outline-button,
+.app-root.dark .search-field, .app-root.dark .filter-select { -fx-border-color: #334352; }
+.app-root.dark .pdf-icon { -fx-background-color: #202c38; -fx-border-color: #465a6d; }
+.app-root.dark .header-copy { -fx-border-color: transparent transparent transparent #334352; }
+.app-root.dark .file-row { -fx-border-color: #2b3946 transparent transparent transparent; }
+.app-root.dark .notes-table .column-header-background, .app-root.dark .notes-table .column-header,
+.app-root.dark .notes-table .filler { -fx-background-color: #202c38; }
+.app-root.dark .notes-table .column-header, .app-root.dark .notes-table .filler { -fx-border-color: transparent transparent #334352 transparent; }
+.app-root.dark .notes-table .column-header .label { -fx-text-fill: #9baabd; }
+.app-root.dark .notes-table .table-row-cell { -fx-border-color: transparent transparent #2b3946 transparent; }
+.app-root.dark .notes-table .table-row-cell:hover { -fx-background-color: #22303c; }
+.app-root.dark .notes-table .table-row-cell:selected { -fx-background-color: #243c54; -fx-text-background-color: #edf3f8; }
+.app-root.dark .comparison-progress > .track { -fx-background-color: #2f3b47; }
+.app-root.dark .movement-badge { -fx-background-color: #243c54; -fx-text-fill: #bcdcff; }
+.app-root.dark .completion-notice { -fx-background-color: #1b392b; -fx-text-fill: #74c89b; }
+.app-root.dark .secondary-button { -fx-background-color: #243c54; -fx-border-color: #365673; -fx-text-fill: #c9e2fb; }
