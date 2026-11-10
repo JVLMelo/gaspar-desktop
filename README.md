@@ -11,6 +11,48 @@ Todo o processamento acontece localmente. Os PDFs não são enviados para a inte
 
 O Maven Wrapper incluído dispensa a instalação global do Maven.
 
+## Clonar e instalar as dependências
+
+Depois de clonar o repositório, é necessário ter apenas o **JDK 21** instalado. O Maven e todas as bibliotecas do projeto são baixados automaticamente pelos scripts `mvnw` e `mvnw.cmd`.
+
+Confirme primeiro a versão do Java:
+
+```bash
+java -version
+```
+
+O resultado deve indicar Java 21.
+
+### Linux ou macOS
+
+```bash
+git clone URL_DO_REPOSITORIO
+cd gaspar-desktop
+chmod +x mvnw
+./mvnw clean package
+```
+
+Para executar o programa:
+
+```bash
+./mvnw javafx:run
+```
+
+### Windows
+
+No PowerShell:
+
+```powershell
+git clone URL_DO_REPOSITORIO
+cd gaspar-desktop
+.\mvnw.cmd clean package
+.\mvnw.cmd javafx:run
+```
+
+O comando `clean package` baixa automaticamente o JavaFX, Apache PDFBox, Apache POI, as bibliotecas de log, o JUnit e o Maven 3.9.11. As dependências ficam armazenadas no cache local do Maven, em `~/.m2/repository`, e não precisam ser baixadas novamente a cada compilação.
+
+Para apenas instalar e utilizar o Gaspar, sem desenvolver o projeto, use o instalador ou pacote correspondente ao sistema operacional. Esses pacotes já incluem o Java e não exigem dependências adicionais no computador do usuário.
+
 ## Executar
 
 Linux/macOS:
