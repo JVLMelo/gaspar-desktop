@@ -160,8 +160,6 @@ public final class GasparApplication extends Application {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        Label privacy = new Label("▣  PDFs processados localmente");
-        privacy.getStyleClass().add("privacy");
         SVGPath themeIcon = new SVGPath();
         themeIcon.setContent(MOON_ICON);
         themeIcon.getStyleClass().add("theme-icon");
@@ -176,7 +174,7 @@ public final class GasparApplication extends Application {
             theme.setText(dark ? "Tema claro" : "Tema escuro");
         });
 
-        HBox topBar = new HBox(22, brand, headerCopy, spacer, privacy, theme);
+        HBox topBar = new HBox(22, brand, headerCopy, spacer, theme);
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.setFillHeight(true);
         topBar.getStyleClass().add("topbar");

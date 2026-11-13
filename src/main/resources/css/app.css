@@ -25,7 +25,6 @@
 .header-copy { -fx-padding: 2px 0 2px 22px; -fx-border-color: transparent transparent transparent #d9e0e8; -fx-border-width: 0 0 0 1px; -fx-alignment: center-left; }
 .header-title { -fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #172334; }
 .header-caption { -fx-font-size: 12px; -fx-text-fill: #667487; }
-.privacy { -fx-font-size: 12px; -fx-text-fill: #24734a; }
 .theme-button {
     -fx-background-color: #f7f9fc;
     -fx-border-color: #cdd8e5;

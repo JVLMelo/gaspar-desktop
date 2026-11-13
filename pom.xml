@@ -6,7 +6,7 @@
 
     <groupId>br.com.gaspar</groupId>
     <artifactId>gaspar-desktop</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>Gaspar Desktop</name>
     <description>Conferência desktop de relatórios Domínio e SPED</description>
 
