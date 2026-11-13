@@ -15,23 +15,28 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TARGET_DIR="$PROJECT_DIR/target"
 INPUT_DIR="$TARGET_DIR/jpackage-input"
 DESTINATION_DIR="$TARGET_DIR/installer"
+APP_VERSION="$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' "$PROJECT_DIR/pom.xml" | head -n 1)"
+if [[ -z "$APP_VERSION" ]]; then
+  echo "Não foi possível encontrar a versão no pom.xml." >&2
+  exit 1
+fi
 
 cd "$PROJECT_DIR"
 ./mvnw clean package dependency:copy-dependencies \
   -DincludeScope=runtime \
   -DoutputDirectory="$INPUT_DIR"
 
-cp "$TARGET_DIR/gaspar-desktop-1.0.0.jar" "$INPUT_DIR/"
+cp "$TARGET_DIR/gaspar-desktop-$APP_VERSION.jar" "$INPUT_DIR/"
 mkdir -p "$DESTINATION_DIR"
 
 COMMON_ARGS=(
   --type "$PACKAGE_TYPE"
   --name Gaspar
-  --app-version 1.0.0
+  --app-version "$APP_VERSION"
   --vendor Gaspar
   --description "Conferência Domínio e SPED"
   --input "$INPUT_DIR"
-  --main-jar gaspar-desktop-1.0.0.jar
+  --main-jar "gaspar-desktop-$APP_VERSION.jar"
   --main-class br.com.gaspar.Launcher
   --icon "$PROJECT_DIR/src/main/resources/icons/gaspar.png"
   --dest "$DESTINATION_DIR"

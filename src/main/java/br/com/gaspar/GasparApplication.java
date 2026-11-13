@@ -4,7 +4,9 @@ import br.com.gaspar.domain.*;
 import br.com.gaspar.report.ExcelReportService;
 import br.com.gaspar.service.ConferenciaService;
 import br.com.gaspar.service.NomeArquivoService;
+import br.com.gaspar.update.UpdateService;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,6 +55,7 @@ public final class GasparApplication extends Application {
     private final ConferenciaService conferenciaService = new ConferenciaService();
     private final ExcelReportService excelService = new ExcelReportService();
     private final NomeArquivoService nomeArquivoService = new NomeArquivoService();
+    private final UpdateService updateService = new UpdateService();
     private final FileSelectorPane dominioSelector = new FileSelectorPane("Relatório do Domínio", "Arraste o relatório do Domínio aqui");
     private final FileSelectorPane spedSelector = new FileSelectorPane("Relatório do SPED", "Arraste o relatório do SPED aqui");
     private final Button compareButton = new Button("Comparar relatórios");
@@ -123,6 +127,7 @@ public final class GasparApplication extends Application {
         stage.show();
         dominioSelector.onChange(this::updateCompareState);
         spedSelector.onChange(this::updateCompareState);
+        checkForUpdates(stage);
     }
 
     private HBox buildTopBar() {
@@ -155,7 +160,7 @@ public final class GasparApplication extends Application {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        Label privacy = new Label("▣  Processamento 100% local");
+        Label privacy = new Label("▣  PDFs processados localmente");
         privacy.getStyleClass().add("privacy");
         SVGPath themeIcon = new SVGPath();
         themeIcon.setContent(MOON_ICON);
@@ -515,6 +520,86 @@ public final class GasparApplication extends Application {
                 ButtonType.CANCEL, ButtonType.OK);
         alert.setHeaderText("Confirmar substituição");
         return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
+    }
+
+    private void checkForUpdates(Stage stage) {
+        if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")
+                || UpdateService.installedVersion() == null) return;
+
+        Thread.ofVirtual().name("gaspar-update-check").start(() -> {
+            try {
+                updateService.checkForUpdate().ifPresent(update ->
+                        Platform.runLater(() -> promptForUpdate(stage, update)));
+            } catch (Exception e) {
+                LOG.debug("Não foi possível verificar atualizações do Gaspar.", e);
+            }
+        });
+    }
+
+    private void promptForUpdate(Stage stage, UpdateService.Update update) {
+        ButtonType updateButton = new ButtonType("Baixar e instalar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType laterButton = new ButtonType("Agora não", ButtonBar.ButtonData.CANCEL_CLOSE);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(stage);
+        alert.setTitle("Atualização do Gaspar");
+        alert.setHeaderText("A versão " + update.latestVersion() + " está disponível");
+        alert.setContentText("Versão instalada: " + update.currentVersion()
+                + "\nA atualização será baixada do GitHub. O Gaspar será fechado para abrir o instalador.");
+        alert.getButtonTypes().setAll(updateButton, laterButton);
+        if (alert.showAndWait().orElse(laterButton).equals(updateButton)) {
+            downloadAndInstallUpdate(stage, update);
+        }
+    }
+
+    private void downloadAndInstallUpdate(Stage stage, UpdateService.Update update) {
+        Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
+        progressAlert.initOwner(stage);
+        progressAlert.setTitle("Atualizando o Gaspar");
+        progressAlert.setHeaderText("Baixando a versão " + update.latestVersion());
+        progressAlert.setContentText("O instalador será verificado antes de ser aberto.");
+        progressAlert.setGraphic(new ProgressIndicator());
+        progressAlert.getButtonTypes().clear();
+        progressAlert.show();
+
+        Task<Path> task = new Task<>() {
+            @Override protected Path call() throws Exception {
+                return updateService.downloadAndVerify(update);
+            }
+        };
+        task.setOnSucceeded(event -> {
+            progressAlert.close();
+            try {
+                Path installer = task.getValue();
+                Process installerProcess = new ProcessBuilder(installer.toString()).start();
+                installerProcess.onExit().thenRun(() -> {
+                    try {
+                        Files.deleteIfExists(installer);
+                        Files.deleteIfExists(installer.getParent());
+                    } catch (IOException e) {
+                        LOG.debug("Não foi possível remover o instalador temporário.", e);
+                    }
+                });
+                Platform.exit();
+            } catch (IOException e) {
+                LOG.error("Não foi possível iniciar o instalador do Gaspar.", e);
+                showUpdateError(stage, "O instalador foi baixado, mas não pôde ser aberto.");
+            }
+        });
+        task.setOnFailed(event -> {
+            progressAlert.close();
+            LOG.error("Falha ao baixar a atualização do Gaspar.", task.getException());
+            showUpdateError(stage, "Não foi possível baixar ou verificar o instalador. "
+                    + "Confira sua conexão e tente novamente mais tarde.");
+        });
+        Thread.ofVirtual().name("gaspar-update-download").start(task);
+    }
+
+    private void showUpdateError(Stage stage, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.initOwner(stage);
+        alert.setTitle("Falha na atualização");
+        alert.setHeaderText("O Gaspar não foi atualizado");
+        alert.showAndWait();
     }
 
     private void setBusy(boolean busy) {

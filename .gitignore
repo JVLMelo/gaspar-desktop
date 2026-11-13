@@ -8,3 +8,24 @@
 /.mvn/apache-maven-*/
 /.mvn/*.tar.gz
 /.mvn/*.zip
+
+# Relatórios e arquivos de clientes nunca devem entrar no repositório
+*.pdf
+*.xls
+*.xlsx
+*.csv
+
+# Configuração local e credenciais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db

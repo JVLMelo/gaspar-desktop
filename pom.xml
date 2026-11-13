@@ -6,7 +6,7 @@
 
     <groupId>br.com.gaspar</groupId>
     <artifactId>gaspar-desktop</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>Gaspar Desktop</name>
     <description>Conferência desktop de relatórios Domínio e SPED</description>
 
@@ -90,6 +90,9 @@
                         <manifest>
                             <mainClass>br.com.gaspar.Launcher</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
