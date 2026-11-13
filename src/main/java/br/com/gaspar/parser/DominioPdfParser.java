@@ -100,7 +100,7 @@ public final class DominioPdfParser implements PdfReportParser<LinhaDominio> {
         for (PositionedTextExtractor.TextLine line : page.lines()) {
             Float xValor = null;
             for (PositionedTextExtractor.Word word : line.words()) {
-                if (xValor == null && word.text().equals("Valor")) {
+                if (xValor == null && word.text().startsWith("Valor")) {
                     xValor = word.x();
                 } else if (xValor != null && word.text().equals("Tipo")) {
                     return new ColumnBounds(xValor, word.x());

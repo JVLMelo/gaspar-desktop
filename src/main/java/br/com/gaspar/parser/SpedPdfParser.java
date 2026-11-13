@@ -19,7 +19,7 @@ public final class SpedPdfParser implements PdfReportParser<LinhaSped> {
     private static final Pattern HEADER_CANDIDATO = Pattern.compile(
             "^\\d{2}/\\d{2}/\\d{4}\\s+(?:\\d{2}/\\d{2}/\\d{4}\\s+)?\\d+");
     private static final Pattern HEADER_SAIDA = Pattern.compile(
-            "^(\\d{2}/\\d{2}/\\d{4})\\s+(?:(\\d{2}/\\d{2}/\\d{4})\\s+)?(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)$");
+            "^(\\d{2}/\\d{2}/\\d{4})\\s+(?:(\\d{2}/\\d{2}/\\d{4})\\s+)?(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)(?:\\s+.*)?$");
     private static final Pattern HEADER_ENTRADA = Pattern.compile(
             "^(\\d{2}/\\d{2}/\\d{4})\\s+(\\d{2}/\\d{2}/\\d{4})\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+.+$");
     private static final Pattern CFOP_SAIDA = Pattern.compile(
