@@ -29,3 +29,6 @@
 # Arquivos do sistema operacional
 .DS_Store
 Thumbs.db
+
+# Planejamento interno do projeto
+/planejamento.md
