@@ -8,7 +8,7 @@ set ARCHIVE=%BASE_DIR%.mvn\apache-maven-%MAVEN_VERSION%-bin.zip
 if not exist "%MAVEN_HOME%\bin\mvn.cmd" (
   if not exist "%BASE_DIR%.mvn" mkdir "%BASE_DIR%.mvn"
   if not exist "%ARCHIVE%" powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://archive.apache.org/dist/maven/maven-3/%MAVEN_VERSION%/binaries/apache-maven-%MAVEN_VERSION%-bin.zip' -OutFile '%ARCHIVE%'"
-  powershell -NoProfile -Command "[System.IO.Compression.ZipFile]::ExtractToDirectory('%ARCHIVE%', '%BASE_DIR%.mvn')"
+  powershell -NoProfile -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('%ARCHIVE%', '%BASE_DIR%.mvn')"
 )
 
 call "%MAVEN_HOME%\bin\mvn.cmd" %*
