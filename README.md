@@ -38,9 +38,9 @@ O instalador Windows atualiza versões futuras do Gaspar. Quem estiver usando um
 2. Selecione ou arraste o PDF do SPED.
 3. Clique em **Comparar relatórios**.
 4. Revise o resumo e as notas sem correspondência ou com divergência.
-5. Clique em **Salvar Excel** para exportar o resultado.
+5. Clique em **Salvar Excel** ou **Salvar PDF** para exportar o resultado.
 
-A planilha contém as abas `Resumo`, `Apenas no Domínio`, `Apenas no SPED`, `Divergências` e `Todas as Notas`.
+A planilha contém as abas `Resumo`, `Apenas no Domínio`, `Apenas no SPED`, `Divergências` e `Todas as Notas`. O PDF reúne o resumo, os totais e todas as notas conferidas em páginas paisagem.
 
 ## Executar a partir do código
 
