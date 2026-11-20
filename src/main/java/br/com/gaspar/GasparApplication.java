@@ -2,6 +2,7 @@ package br.com.gaspar;
 
 import br.com.gaspar.domain.*;
 import br.com.gaspar.report.ExcelReportService;
+import br.com.gaspar.report.PdfReportService;
 import br.com.gaspar.service.ConferenciaService;
 import br.com.gaspar.service.NomeArquivoService;
 import br.com.gaspar.update.UpdateService;
@@ -54,12 +55,14 @@ public final class GasparApplication extends Application {
 
     private final ConferenciaService conferenciaService = new ConferenciaService();
     private final ExcelReportService excelService = new ExcelReportService();
+    private final PdfReportService pdfService = new PdfReportService();
     private final NomeArquivoService nomeArquivoService = new NomeArquivoService();
     private final UpdateService updateService = new UpdateService();
     private final FileSelectorPane dominioSelector = new FileSelectorPane("Relatório do Domínio", "Arraste o relatório do Domínio aqui");
     private final FileSelectorPane spedSelector = new FileSelectorPane("Relatório do SPED", "Arraste o relatório do SPED aqui");
     private final Button compareButton = new Button("Comparar relatórios");
     private final Button saveButton = new Button("⇩  Salvar Excel");
+    private final Button savePdfButton = new Button("⇩  Salvar PDF");
     private final ProgressBar progress = new ProgressBar(0);
     private final Label actionTitle = new Label("Aguardando os relatórios");
     private final Label status = new Label("Selecione os dois arquivos PDF para iniciar a conferência.");
@@ -99,7 +102,7 @@ public final class GasparApplication extends Application {
             files.setPrefTileWidth(Math.max(400, available));
         });
 
-        configureActions();
+        configureActions(stage);
         configureTable();
         configureFilters();
         buildResultArea();
@@ -203,12 +206,16 @@ public final class GasparApplication extends Application {
         return toolbar;
     }
 
-    private void configureActions() {
+    private void configureActions(Stage stage) {
         compareButton.getStyleClass().add("primary-button");
         compareButton.setDisable(true);
         compareButton.setOnAction(event -> compare());
         saveButton.getStyleClass().addAll("secondary-button", "export-button");
+        saveButton.setOnAction(event -> saveExcel(stage));
         saveButton.setDisable(true);
+        savePdfButton.getStyleClass().addAll("secondary-button", "export-button");
+        savePdfButton.setOnAction(event -> savePdf(stage));
+        savePdfButton.setDisable(true);
         progress.setMaxWidth(Double.MAX_VALUE);
         progress.getStyleClass().add("comparison-progress");
         actionTitle.getStyleClass().add("action-title");
@@ -256,7 +263,7 @@ public final class GasparApplication extends Application {
         count.getStyleClass().addAll("count", "count-badge");
         Region tableSpacer = new Region();
         HBox.setHgrow(tableSpacer, Priority.ALWAYS);
-        HBox tableHead = new HBox(12, tableTitle, count, tableSpacer, search, filter, saveButton);
+        HBox tableHead = new HBox(10, tableTitle, count, tableSpacer, search, filter, saveButton, savePdfButton);
         tableHead.setAlignment(Pos.CENTER_LEFT);
         tableHead.getStyleClass().add("table-head");
 
@@ -296,6 +303,7 @@ public final class GasparApplication extends Application {
         comparisonStartedAt = System.nanoTime();
         setBusy(true);
         saveButton.setDisable(true);
+        savePdfButton.setDisable(true);
         modeBox.setVisible(false);
         modeBox.setManaged(false);
         status.getStyleClass().removeAll("error", "success");
@@ -318,6 +326,7 @@ public final class GasparApplication extends Application {
             setBusy(false);
             progress.setProgress(1);
             saveButton.setDisable(false);
+            savePdfButton.setDisable(false);
             actionTitle.setText("Comparação concluída");
             validationStep.setText("✓  Arquivos validados");
             layoutStep.setText("✓  Leiaute reconhecido");
@@ -495,6 +504,7 @@ public final class GasparApplication extends Application {
             setBusy(false);
             progress.setProgress(1);
             saveButton.setDisable(false);
+            savePdfButton.setDisable(false);
             actionTitle.setText("Excel salvo com sucesso");
             status.setText(finalDestination.toString());
             status.getStyleClass().removeAll("error");
@@ -504,12 +514,60 @@ public final class GasparApplication extends Application {
             setBusy(false);
             progress.setProgress(0);
             saveButton.setDisable(false);
+            savePdfButton.setDisable(false);
             LOG.error("Falha ao gerar Excel", task.getException());
             actionTitle.setText("Não foi possível salvar o Excel");
             status.setText("Verifique se o arquivo está aberto ou se a pasta permite escrita.");
             status.getStyleClass().add("error");
         });
         Thread.ofVirtual().name("gaspar-excel").start(task);
+    }
+
+    private void savePdf(Stage stage) {
+        if (currentResult == null) return;
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Salvar relatório da conferência");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documento PDF", "*.pdf"));
+        String suggested = nomeArquivoService.sugerir(currentResult);
+        chooser.setInitialFileName(suggested.replaceFirst("(?i)\\.xlsx$", ".pdf"));
+        File selected = chooser.showSaveDialog(stage);
+        if (selected == null) return;
+        Path destination = selected.toPath().toAbsolutePath();
+        if (!destination.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            destination = destination.resolveSibling(destination.getFileName() + ".pdf");
+        }
+        if (Files.exists(destination) && !confirmOverwrite(destination)) return;
+        Path finalDestination = destination;
+        setBusy(true);
+        actionTitle.setText("Gerando o arquivo PDF");
+        status.setText("Preparando o resumo e as notas conferidas...");
+        Task<Void> task = new Task<>() {
+            @Override protected Void call() throws Exception {
+                pdfService.gerar(currentResult, finalDestination);
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            setBusy(false);
+            progress.setProgress(1);
+            saveButton.setDisable(false);
+            savePdfButton.setDisable(false);
+            actionTitle.setText("PDF salvo com sucesso");
+            status.setText(finalDestination.toString());
+            status.getStyleClass().removeAll("error");
+            status.getStyleClass().add("success");
+        });
+        task.setOnFailed(event -> {
+            setBusy(false);
+            progress.setProgress(0);
+            saveButton.setDisable(false);
+            savePdfButton.setDisable(false);
+            LOG.error("Falha ao gerar PDF", task.getException());
+            actionTitle.setText("Não foi possível salvar o PDF");
+            status.setText("Verifique se o arquivo está aberto ou se a pasta permite escrita.");
+            status.getStyleClass().add("error");
+        });
+        Thread.ofVirtual().name("gaspar-pdf").start(task);
     }
 
     private boolean confirmOverwrite(Path destination) {
@@ -606,6 +664,7 @@ public final class GasparApplication extends Application {
         dominioSelector.setDisable(busy);
         spedSelector.setDisable(busy);
         if (busy) saveButton.setDisable(true);
+        if (busy) savePdfButton.setDisable(true);
     }
 
     private void updateCompareState() {
