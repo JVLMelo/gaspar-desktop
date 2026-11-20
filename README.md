@@ -104,8 +104,8 @@ O instalador Windows também pode ser compilado a partir do Linux usando o GitHu
 Exemplo para a versão `1.1.1`:
 
 ```bash
-git tag v1.1.1
-git push origin v1.1.1
+git tag v1.1.2
+git push origin v1.1.2
 ```
 
 O workflow do GitHub Actions executa os testes, monta o instalador Windows, calcula seu checksum SHA-256 e publica ambos em uma Release. As instalações atuais do Gaspar no Windows verificam essa Release ao iniciar e oferecem a atualização quando ela é mais recente.
